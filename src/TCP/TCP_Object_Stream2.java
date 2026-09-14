@@ -44,6 +44,15 @@ public class TCP_Object_Stream2 {
             for(int i=0;i<s.length-1;i++){
                 userSb.append(s[i].charAt(0));
             }
+            userSb.append(s[s.length-1]);
+            customer.setUserName(userSb.toString().toLowerCase());
+
+            String[] dobS=customer.getDayOfBirth().trim().split("-");
+            String FMdob=dobS[1]+"/"+dobS[0]+"/"+dobS[2];
+            customer.setDayOfBirth(FMdob);
+
+            out.writeObject(customer);
+            out.flush();
 
             //d
             in.close();

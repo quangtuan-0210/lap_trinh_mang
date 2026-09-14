@@ -1,13 +1,14 @@
+package TCP;
+
 import java.io.*;
 import java.net.Socket;
-import java.util.*;
 
-public class TCP_Byte_Stream {
+public class TCP_Byte_Stream2 {
     public static void main(String[] args){
         String serverIp="36.50.135.242";
         int port=2206;
         String studentCode="B23DCCN883";
-        String qCode="I7U2RJSl";
+        String qCode="zHgiEw1Q";
 
         try(Socket socket= new Socket(serverIp,port)){
             socket.setSoTimeout(5000);
@@ -26,35 +27,36 @@ public class TCP_Byte_Stream {
             char[] buffer=new char[2048];
             int readB=in.read(buffer);
             if(readB!=-1){
-                String response=new String(buffer,0,readB).trim();
-                System.out.println("2.");
+                String response=new String(buffer,0,readB);
+                System.out.println("2");
 
                 //c
-                String[] parts= response.split(",");
+                String[] parts=response.split(",");
                 int n=parts.length;
                 int[] a=new int[n];
                 for(int i=0;i<n;i++){
-                    a[i]=Integer.parseInt(parts[i].trim());
+                    a[i]=Integer.parseInt(parts[i]);
                 }
-                Arrays.sort(a);
 
-                int MinDiff=Integer.MAX_VALUE;
-                int num1=0,num2=0;
-
-                for(int i=1;i<n;i++){
-                    int diff=a[i]-a[i-1];
-                    if(diff<MinDiff){
-                        MinDiff=diff;
-                        num1=a[i-1];
-                        num2=a[i];
+                int max1 =Integer.MIN_VALUE;
+                for(int i=0;i<n;i++){
+                    if(a[i]> max1){
+                        max1 =a[i];
                     }
                 }
-
-                String result=MinDiff+","+num1+","+num2;
-                System.out.println("c");
+                int max2=Integer.MIN_VALUE;
+                int pos=-1;
+                for(int i=0;i<n;i++){
+                    if(a[i]<max1 && a[i]>max2){
+                        max2 =a[i];
+                        pos=i;
+                    }
+                }
+                String result=max2+","+pos;
                 out.write(result);
                 out.newLine();
                 out.flush();
+                System.out.println("3");
             }
 
             //d

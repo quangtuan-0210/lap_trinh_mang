@@ -1,13 +1,15 @@
+package TCP;
+
 import java.io.*;
 import java.util.*;
 import java.net.Socket;
 
-public class TCP_Character_Stream2 {
+public class TCP_Character_Stream {
     public static void main(String[] args) {
         String serverIp="36.50.135.242";
         int port=2208;
         String studentCode="B23DCCN883";
-        String qCode="HtwVc5wR";
+        String qCode="YPKy96Qm";
 
         try(Socket socket =new Socket(serverIp,port)) {
             socket.setSoTimeout(5000);
@@ -24,29 +26,25 @@ public class TCP_Character_Stream2 {
 
             //b
             String response=in.readLine();
-            System.out.println("2");
+            System.out.println("2. Da gui response: "+response);
 
             //c
-            if(response!=null && !response.isEmpty()){}{
-                Map<Character,Integer> countMap=new HashMap<>();
-                for(char c: response.toCharArray()){
-                    if(Character.isLetterOrDigit(c)){
-                        countMap.put(c, countMap.getOrDefault(c,0)+1);
+            if(response != null && !response.isEmpty()){
+                String[] domains=response.split(",");
+                List<String> eduDomains=new ArrayList<>();
+                for(String d:domains){
+                    d=d.trim();
+                    if(d.endsWith(".edu")){
+                        eduDomains.add(d);
                     }
                 }
-                StringBuilder sb=new StringBuilder();
-                Set<Character> vs=new HashSet<>();
-                for(char c: response.toCharArray()){
-                    if(Character.isLetterOrDigit(c) && countMap.get(c)>1 &&  !vs.contains(c)){
-                        sb.append(c).append(":").append(countMap.get(c)).append(",");
-                        vs.add(c);
-                    }
-                }
-                out.write(sb.toString());
+                String result=String.join(", ", eduDomains);
+                out.write(result);
                 out.newLine();
                 out.flush();
-                System.out.println("3");
+                System.out.println("3. Da gui result: "+result);
             }
+
 
             //d
             in.close();
