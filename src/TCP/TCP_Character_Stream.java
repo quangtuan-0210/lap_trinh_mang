@@ -14,42 +14,34 @@ public class TCP_Character_Stream {
         try(Socket socket =new Socket(serverIp,port)) {
             socket.setSoTimeout(5000);
 
-            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            BufferedReader in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            BufferedWriter out=new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-            //a.
-            String request = studentCode + ";" + qCode;
+            //a
+            String request=studentCode+";"+qCode;
             out.write(request);
-            out.newLine();
             out.flush();
-            System.out.println("1. Da gui request: "+request);
 
             //b
             String response=in.readLine();
-            System.out.println("2. Da gui response: "+response);
 
             //c
-            if(response != null && !response.isEmpty()){
-                String[] domains=response.split(",");
-                List<String> eduDomains=new ArrayList<>();
-                for(String d:domains){
-                    d=d.trim();
-                    if(d.endsWith(".edu")){
-                        eduDomains.add(d);
+            if(response!=null && !response.isEmpty()){
+                String[] domain=response.split(",");
+                List<String> edu=new ArrayList<>();
+                for(String s: domain){
+                    s=s.trim();
+                    if(s.endsWith("edu")){
+                        edu.add(s);
                     }
                 }
-                String result=String.join(", ", eduDomains);
+                String result=String.join(",",edu);
                 out.write(result);
-                out.newLine();
                 out.flush();
-                System.out.println("3. Da gui result: "+result);
             }
-
-
             //d
             in.close();
             out.close();
-            System.out.println("4. Hoan thanh");
 
 
         }catch (IOException e) {

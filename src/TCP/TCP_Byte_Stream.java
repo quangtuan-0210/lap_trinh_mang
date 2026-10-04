@@ -14,59 +14,56 @@ public class TCP_Byte_Stream {
         try(Socket socket= new Socket(serverIp,port)){
             socket.setSoTimeout(5000);
 
-            BufferedReader in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            BufferedWriter out=new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            InputStream in=socket.getInputStream();
+            OutputStream out=socket.getOutputStream();
 
             //a.
             String request=studentCode+";"+qCode;
-            out.write(request);
-            out.newLine();
+            out.write(request.getBytes());
             out.flush();
-            System.out.println("1");
 
             //b
-            char[] buffer=new char[2048];
-            int readB=in.read(buffer);
-            if(readB!=-1){
-                String response=new String(buffer,0,readB).trim();
-                System.out.println("2.");
+            byte[] buffer=new byte[2048];
+            int x=in.read(buffer);
+            if(x==-1) return;
 
-                //c
-                String[] parts= response.split(",");
-                int n=parts.length;
-                int[] a=new int[n];
-                for(int i=0;i<n;i++){
-                    a[i]=Integer.parseInt(parts[i].trim());
-                }
-                Arrays.sort(a);
+            String response=new String(buffer,0,x);
 
-                int MinDiff=Integer.MAX_VALUE;
-                int num1=0,num2=0;
-
-                for(int i=1;i<n;i++){
-                    int diff=a[i]-a[i-1];
-                    if(diff<MinDiff){
-                        MinDiff=diff;
-                        num1=a[i-1];
-                        num2=a[i];
-                    }
-                }
-
-                String result=MinDiff+","+num1+","+num2;
-                System.out.println("c");
-                out.write(result);
-                out.newLine();
-                out.flush();
+            //c
+            String[] s=response.split(",");
+            int[] a=new int[s.length];
+            for(int i=0;i<s.length;i++){
+                a[i]=Integer.parseInt(s[i].trim());
             }
 
+            Arrays.sort(a);
+            int minDiff=Integer.MAX_VALUE;
+            int num1=0,num2=0;
+            for(int i=0;i<a.length-1;i++){
+                int diff=a[i+1]-a[i];
+                if(diff<minDiff){
+                    minDiff=diff;
+                }
+            }
+
+            for(int i=a.length-2;i>=0;i--){
+                if(a[i+1]-a[i]==minDiff){
+                    num1=a[i];
+                    num2=a[i+1];
+                    break;
+                }
+            }
+            String result=minDiff+","+num1+","+num2;
+            out.write(result.getBytes());
+            out.flush();
             //d
             in.close();
             out.close();
-            System.out.println("4. Hoan thanh");
+
 
         }catch (IOException e){
             e.printStackTrace();
-            System.out.println("Error");
+
         }
     }
 }

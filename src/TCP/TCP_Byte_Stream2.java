@@ -13,60 +13,49 @@ public class TCP_Byte_Stream2 {
         try(Socket socket= new Socket(serverIp,port)){
             socket.setSoTimeout(5000);
 
-            BufferedReader in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            BufferedWriter out=new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            InputStream in=socket.getInputStream();
+            OutputStream out=socket.getOutputStream();
 
             //a.
             String request=studentCode+";"+qCode;
-            out.write(request);
-            out.newLine();
+            out.write(request.getBytes());
             out.flush();
-            System.out.println("1");
 
             //b
-            char[] buffer=new char[2048];
-            int readB=in.read(buffer);
-            if(readB!=-1){
-                String response=new String(buffer,0,readB);
-                System.out.println("2");
+            byte[] buffer=new byte[2048];
+            int x=in.read(buffer);
+            if(x==-1) return;
 
-                //c
-                String[] parts=response.split(",");
-                int n=parts.length;
-                int[] a=new int[n];
-                for(int i=0;i<n;i++){
-                    a[i]=Integer.parseInt(parts[i]);
-                }
+            String response=new String(buffer,0,x);
 
-                int max1 =Integer.MIN_VALUE;
-                for(int i=0;i<n;i++){
-                    if(a[i]> max1){
-                        max1 =a[i];
-                    }
-                }
-                int max2=Integer.MIN_VALUE;
-                int pos=-1;
-                for(int i=0;i<n;i++){
-                    if(a[i]<max1 && a[i]>max2){
-                        max2 =a[i];
-                        pos=i;
-                    }
-                }
-                String result=max2+","+pos;
-                out.write(result);
-                out.newLine();
-                out.flush();
-                System.out.println("3");
+            //c
+            String[] s=response.split(",");
+            int[] a=new int[s.length];
+            for(int i=0;i<s.length;i++){
+                a[i]=Integer.parseInt(s[i]);
             }
-
+            int Max=Integer.MIN_VALUE;
+            for(int i=0;i<a.length;i++){
+                if(a[i]>Max) Max=a[i];
+            }
+            int secondMax=Integer.MIN_VALUE;
+            int pos=-1;
+            for(int i=0;i<a.length;i++){
+                if(a[i]<Max && a[i]>secondMax){
+                    secondMax=a[i];
+                    pos=i;
+                }
+            }
+            String result=secondMax+","+pos;
+            out.write(result.getBytes());
+            out.flush();
             //d
             in.close();
             out.close();
-            System.out.println("4. Hoan thanh");
+
 
         }catch (IOException e){
             e.printStackTrace();
-            System.out.println("Error");
         }
     }
 }
