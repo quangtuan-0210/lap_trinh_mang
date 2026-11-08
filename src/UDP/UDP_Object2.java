@@ -19,15 +19,14 @@ public class UDP_Object2 {
         socket.send(new DatagramPacket(sendData,sendData.length,ip,port));
 
         //b
-        byte[] buffer=new byte[2048];
+        byte[] buffer=new byte[1024];
         DatagramPacket response=new DatagramPacket(buffer,buffer.length);
         socket.receive(response);
 
-        byte[] data=response.getData();
+        byte[] responseData=response.getData();
         int n=response.getLength();
-
-        String requestId=new String(data,0,8);
-        ObjectInputStream in=new ObjectInputStream(new ByteArrayInputStream(data,8,n-8));
+        String requestId=new String(responseData,0,8);
+        ObjectInputStream in=new ObjectInputStream(new ByteArrayInputStream(responseData,8,n-8));
         Customer customer=(Customer) in.readObject();
 
         //c
@@ -36,34 +35,32 @@ public class UDP_Object2 {
         StringBuilder sb=new StringBuilder();
         for(int i=0;i<s.length-1;i++){
             String w=s[i];
-            sb.append(Character.toUpperCase(w.charAt(0)) + w.substring(1));
-            if(i<s.length-2){
-                sb.append(" ");
-            }
+            sb.append(Character.toUpperCase(w.charAt(0))+w.substring(1));
+            if(i<s.length-2) sb.append(" ");
         }
-        String formatName=last+", "+sb.toString();
-        customer.setName(formatName);
+        String name=last+", "+sb.toString();
+        customer.setName(name);
 
         StringBuilder sb2=new StringBuilder();
         for(int i=0;i<s.length-1;i++){
             sb2.append(s[i].charAt(0));
         }
-        sb2.append(last.toLowerCase());
-        customer.setUserName(sb2.toString());
+        sb2.append(s[s.length-1]);
+        String username=sb2.toString();
+        customer.setUserName(username);
 
-        String[] dobS=customer.getDayOfBirth().trim().split("-");
-        String Fdob=dobS[1]+"/"+dobS[0]+"/"+dobS[2];
-        customer.setDayOfBirth(Fdob);
+        String[] dob=customer.getDayOfBirth().split("-");
+        String dobF=dob[1]+"/"+dob[0]+"/"+dob[2];
+        customer.setDayOfBirth(dobF);
 
-        ByteArrayOutputStream bos=new ByteArrayOutputStream();
-        bos.write(requestId.getBytes());
-        ObjectOutputStream out=new ObjectOutputStream(bos);
+        ByteArrayOutputStream os=new ByteArrayOutputStream();
+        os.write(requestId.getBytes());
+        ObjectOutputStream out=new ObjectOutputStream(os);
         out.writeObject(customer);
         out.flush();
 
-        byte[] result=bos.toByteArray();
+        byte[] result=os.toByteArray();
         socket.send(new DatagramPacket(result,result.length,ip,port));
-
 
         socket.close();
     }

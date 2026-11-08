@@ -15,36 +15,38 @@ public class UDP_Data_type {
 
         //a
         String request=";B23DCCN883;hzCsXl6c";
-        byte[] sendData=request.getBytes();
-        socket.send(new DatagramPacket(sendData,sendData.length,ip,port));
+        byte[] requestData=request.getBytes();
+        socket.send(new DatagramPacket(requestData,requestData.length,ip,port));
 
         //b
-        byte[] buffer=new byte[2048];
+        byte[] buffer=new byte[1024];
         DatagramPacket response=new DatagramPacket(buffer,buffer.length);
         socket.receive(response);
+        String responseStr=new String(response.getData(),0,response.getLength());
 
-        String responseStr=new String(response.getData(),0,response.getLength()).trim();
         int sep=responseStr.indexOf(";");
         String requestId=responseStr.substring(0,sep);
         String data=responseStr.substring(sep+1);
 
         //c
-        String[] part=data.split(";");
-        int n=Integer.parseInt(part[0]);
-        String[] s=part[1].split(",");
+        String[] word=data.split(";");
+        int n=Integer.parseInt(word[0]);
+        String[] s=word[1].split(",");
 
         boolean[] vs=new boolean[n+1];
-        for(String x:s){
-            x=x.trim();
-            if(!x.isEmpty()) vs[Integer.parseInt(x)]=true;
+        for(String x:s ){
+            int a=Integer.parseInt(x);
+            if(!vs[a]) vs[a]=true;
         }
+
         StringBuilder sb=new StringBuilder();
         for(int i=1;i<=n;i++){
-            if(!vs[i]){
+            if(!vs[i]) {
                 if(sb.length()>0) sb.append(",");
                 sb.append(i);
             }
         }
+
         String result=requestId+";"+sb.toString();
         byte[] resultData=result.getBytes();
         socket.send(new DatagramPacket(resultData,resultData.length,ip,port));
