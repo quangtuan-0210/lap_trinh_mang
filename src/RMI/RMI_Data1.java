@@ -26,7 +26,7 @@ public class RMI_Data1 {
             List<?> list=(List<?>)ob;
             a=new int[list.size()];
             for(int i=0;i<list.size();i++){
-                a[i]=(int) list.get(i);
+                a[i] = (Integer) list.get(i);
             }
         }
         //b
@@ -36,7 +36,7 @@ public class RMI_Data1 {
             boolean honTrai = (i == 0)     || a[i] > a[i - 1];
             boolean honPhai = (i == n - 1) || a[i] > a[i + 1];
             if (honTrai && honPhai) {
-                peaks.add(i + 1);                  // vị trí đếm từ 1
+                peaks.add(i + 1);
             }
         }
         //c
